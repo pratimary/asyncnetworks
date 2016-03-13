@@ -8,13 +8,11 @@ public class Message {
 	private int delay;
 	private int deliveryTime;
 
-	public Message(int roundNum, Node source, Node destination, int delay) {
+	public Message(int roundNum, Node source, Node destination) {
 		super();
 		this.roundNum = roundNum;
 		this.source = source;
 		this.destination = destination;
-		this.delay = delay;
-		this.deliveryTime = this.roundNum + this.delay;
 	}
 
 	public int getRoundNum() {
@@ -35,5 +33,10 @@ public class Message {
 
 	public int getDeliveryTime() {
 		return deliveryTime;
+	}
+
+	public void setDelay(int delay) {
+		this.delay = delay;
+		this.deliveryTime = roundNum + delay;
 	}
 }
