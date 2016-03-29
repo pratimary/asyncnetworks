@@ -29,9 +29,10 @@ public class Channel {
 		return node2;
 	}
 
-	public Message getMessage(int round) {
+	public Message getMessage(int round, Node receiver) {
 		synchronized (messages) {
-			if (messages.size() != 0 && messages.get(0).getDeliveryTime() <= round) {
+			if (messages.size() != 0 && messages.get(0).getDeliveryTime() <= round
+					&& receiver == messages.get(0).getMsgDestination()) {
 				return messages.remove(0);
 			}
 			logger.debug("No message to be exchanged between nodeId:{} and nodeId:{} for round:{}", node1.getNodeId(),
@@ -59,6 +60,25 @@ public class Channel {
 		StringBuilder builder = new StringBuilder();
 		return builder.append("[Node:").append(node1.getNodeId()).append(" Node:").append(node2.getNodeId()).append("]")
 				.toString();
+	}
+
+	public boolean isNodeInTheChannel(Node node) {
+		if (node1 == node || node2 == node) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public Node getOtherNode(Node node) {
+		if (node1 == node) {
+			return node2;
+		} else if (node2 == node) {
+			return node1;
+		} else {
+			logger.error("Node is not part of this channel!.{}", node);
+			return null;
+		}
 	}
 
 }

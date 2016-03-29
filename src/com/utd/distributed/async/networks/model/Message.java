@@ -3,28 +3,26 @@ package com.utd.distributed.async.networks.model;
 public class Message {
 
 	private int roundNum;
-	private Node source;
-	private Node destination;
+	private int sourceNodeId;
+	private Node msgSource;
+	private Node msgDestination;
 	private int delay;
 	private int deliveryTime;
+	private int uid;
+	private MsgType msgType;
 
-	public Message(int roundNum, Node source, Node destination) {
+	public Message(int roundNum, int sourceNodeId, Node msgSource, Node msgDestination, int uid, MsgType msgType) {
 		super();
 		this.roundNum = roundNum;
-		this.source = source;
-		this.destination = destination;
+		this.sourceNodeId = sourceNodeId;
+		this.msgSource = msgSource;
+		this.msgDestination = msgDestination;
+		this.uid = uid;
+		this.msgType = msgType;
 	}
 
 	public int getRoundNum() {
 		return roundNum;
-	}
-
-	public Node getSource() {
-		return source;
-	}
-
-	public Node getDestination() {
-		return destination;
 	}
 
 	public int getDelay() {
@@ -39,4 +37,25 @@ public class Message {
 		this.delay = delay;
 		this.deliveryTime = roundNum + delay;
 	}
+
+	public int getUid() {
+		return uid;
+	}
+
+	public Node getMsgSource() {
+		return msgSource;
+	}
+
+	public Node getMsgDestination() {
+		return msgDestination;
+	}
+
+	public int getSourceNodeId() {
+		return sourceNodeId;
+	}
+
+	public MsgType getMsgType() {
+		return msgType;
+	}
+
 }
