@@ -36,6 +36,8 @@ public class Node implements Runnable {
 				if (isRoundComplete() == false) {
 					synchronized (this) {
 						if (roundNum == 1) {
+							// Send message to all neighbors and set parent of
+							// this node as null
 							sendMsgToAllNeighbors();
 						}
 						readMessageFromNeighbors();
@@ -48,18 +50,6 @@ public class Node implements Runnable {
 		} catch (Exception e) {
 			logger.error("Exception:", e);
 		}
-	}
-
-	private void sendMsgToAllNeighbors() {
-		List<Node> waitList = new LinkedList<Node>();
-		for (Channel channel : channels) {
-			Node dest = channel.getOtherNode(this);
-			Message msg = new Message(roundNum, nodeId, this, dest, nodeId, MsgType.EXPLORE);
-			channel.putMessage(msg);
-			waitList.add(dest);
-		}
-		sourceVsWaitList.put(nodeId, waitList);
-		sourceVsParentNode.put(nodeId, null);
 	}
 
 	private void readMessageFromNeighbors() {
@@ -76,14 +66,24 @@ public class Node implements Runnable {
 			}
 
 			if (message.getMsgType() == MsgType.EXPLORE) {
+				// If the explore message for a particular source node is
+				// already
+				// processed, then send reject message for subsequent requests
 				if (sourceVsParentNode.containsKey(sourceNodeId)) {
 					Node dest = message.getMsgSource();
 					sendRejectMsg(sourceNodeId, dest, channel);
 				} else {
+					// If the explore message for a particular source node is
+					// seen for the first time, then choose the sender as the
+					// parent and then send explore message to the rest of the
+					// neighbors
 					sourceVsParentNode.put(sourceNodeId, message.getMsgSource());
 					sendExploreMsgToNeighbors(sourceNodeId, highestIdSeenSoFar);
 				}
 			} else {
+				// If the received message is of type ACCEPT/REJECT, then notify
+				// the parent of this node for that particular source node, once
+				// it has heard back from all it's children
 				List<Node> waitingList = sourceVsWaitList.get(sourceNodeId);
 				Iterator<Node> iterator = waitingList.iterator();
 				while (iterator.hasNext()) {
@@ -95,6 +95,12 @@ public class Node implements Runnable {
 				}
 				if (waitingList.isEmpty()) {
 					if (message.getSourceNodeId() == this.nodeId) {
+						// If the node which initiated the spanning tree
+						// construction receives the message back, then check if
+						// the highest UID is the same as its UID. If yes, then
+						// change status to LEADER. If no, then change status to
+						// NON-LEADER and the highest UID is the UID of the
+						// leader.
 						if ((highestIdSeenSoFar == this.nodeId)) {
 							status = NodeStatus.LEADER;
 						} else {
@@ -134,6 +140,18 @@ public class Node implements Runnable {
 			waitingList.add(dest);
 		}
 
+	}
+
+	private void sendMsgToAllNeighbors() {
+		List<Node> waitList = new LinkedList<Node>();
+		for (Channel channel : channels) {
+			Node dest = channel.getOtherNode(this);
+			Message msg = new Message(roundNum + 1, nodeId, this, dest, nodeId, MsgType.EXPLORE);
+			channel.putMessage(msg);
+			waitList.add(dest);
+		}
+		sourceVsWaitList.put(nodeId, waitList);
+		sourceVsParentNode.put(nodeId, null);
 	}
 
 	private void sendRejectMsg(Integer sourceNodeId, Node dest, Channel channel) {

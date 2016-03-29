@@ -11,6 +11,20 @@ public class Message {
 	private int uid;
 	private MsgType msgType;
 
+	/**
+	 * @param roundNum
+	 *            - Round number for the message
+	 * @param sourceNodeId
+	 *            - UID of the node for which the spanning tree is constructed
+	 * @param msgSource
+	 *            - Specifies the node, that is sending the message
+	 * @param msgDestination
+	 *            - Specifies the node for which the message is sent
+	 * @param uid
+	 *            - Highest Seen UID by the node, which is sending the message
+	 * @param msgType
+	 *            - ACCEPT / REJECT / EXPLORE
+	 */
 	public Message(int roundNum, int sourceNodeId, Node msgSource, Node msgDestination, int uid, MsgType msgType) {
 		super();
 		this.roundNum = roundNum;
