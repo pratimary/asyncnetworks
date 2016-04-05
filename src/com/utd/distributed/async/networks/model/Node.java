@@ -47,6 +47,8 @@ public class Node implements Runnable {
 					Thread.sleep(150);
 				}
 			}
+		} catch (InterruptedException e) {
+			logger.debug("Thread interrupted.");
 		} catch (Exception e) {
 			logger.error("Exception:", e);
 		}

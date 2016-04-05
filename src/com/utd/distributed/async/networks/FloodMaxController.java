@@ -32,11 +32,17 @@ public class FloodMaxController {
 			nodes = parser.parseInputFile();
 			logger.info(nodes);
 			startFloodMaxAlgo();
-
+			printFinalOutput();
 		} catch (Exception e) {
 			logger.error("Failed to parse", e);
 		}
 
+	}
+
+	private static void printFinalOutput() {
+		for (Node node : nodes) {
+			logger.info(node);
+		}
 	}
 
 	private static void startFloodMaxAlgo() throws InterruptedException {
